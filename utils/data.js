@@ -88,3 +88,6 @@ const data = {
 };
 
 export default data;
+
+//not in use anymore, now only psql tables
+//they looks the same

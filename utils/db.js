@@ -79,3 +79,10 @@ module.exports.addItem = (
     ];
     return db.query(myQuery, keys);
 };
+
+// USERS
+module.exports.getUser = (email) => {
+    const myQuery = `SELECT * FROM users WHERE email = $1`;
+    const key = [email];
+    return db.query(myQuery, key);
+};
