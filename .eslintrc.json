@@ -6,7 +6,7 @@
         "es6": true,
         "node": true,
         "jest": true
-    },
+    }, // "es6": true, rende possibile usare Promise
     // "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
         "ecmaFeatures": {
