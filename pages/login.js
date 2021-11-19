@@ -1,25 +1,51 @@
 import axios from "axios";
+import { useRouter } from "next/router";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Store } from "../utils/Store";
+import Cookies from "js-cookie";
+import { useSnackbar } from "notistack";
 
 export default function Login() {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const router = useRouter();
+    const { redirect } = router.query;
+    // redirect é una query che passiamo se vogliamo reindirizzare ad un'altra pagina invece di "home", tipo pag precedente
+    // ad es. router.push("/login?redirect=/checkout");
+    const { state, dispatch } = useContext(Store);
+    const { userInfo } = state;
+    if (userInfo) {
+        router.push("/");
+    }
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    // const [errors, setErrors] = useState(false);
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        closeSnackbar();
 
         try {
             const { data } = await axios.post("/api/users/login", {
                 email,
                 password,
             });
-            alert("succesfull Login!");
-            //save users data from db into cookies
-            //redirect to home logged in
+            dispatch({ type: "USER_LOGIN", payload: data });
+            Cookies.set("userInfo", JSON.stringify(data));
+            // alert("succesfull Login!");
+            router.push(redirect || "/");
         } catch (err) {
-            alert(err.response.data ? err.response.data.message : err.message);
+            // alert(err.response.data ? err.response.data.message : err.message);
+            enqueueSnackbar(
+                err.response.data ? err.response.data.message : err.message,
+                { variant: "error" }
+            );
+
             //if error show allert
+            // console.log("err:", err);
+            // setError(err);
+            //posso usare useState in alternativa e mostrare degli span vicino a gli inputs
         }
     };
 
@@ -61,7 +87,7 @@ export default function Login() {
 
             <p>
                 Don't have an account?{" "}
-                <Link href="/join">
+                <Link href={`/register?redirect=${redirect || "/"}`}>
                     <a>Register</a>
                 </Link>
             </p>

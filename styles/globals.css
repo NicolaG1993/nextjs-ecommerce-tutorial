@@ -80,6 +80,7 @@ main {
     background-color: var(--bg000);
 }
 
+/* LAYOUT */
 #cartCounter {
     height: 16px;
     width: 16px;
@@ -95,6 +96,33 @@ main {
     border-radius: 50%;
 }
 
+.navbarBtn {
+    color: white;
+    text-transform: initial;
+    width: 100px;
+    margin-left: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.navbarDropMenu {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    right: 15px;
+    top: 50px;
+    background-color: var(--bg200);
+}
+
+.navbarDropMenu a {
+    line-height: 1.5rem;
+}
+.navbarDropMenu a:hover {
+    color: slateblue;
+}
+
+/* HOME */
 .home-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -218,4 +246,11 @@ main {
 }
 .cart-product select {
     width: 50px;
+}
+
+/* REGISTRATION */
+
+.form-error {
+    background-color: red;
+    position: absolute;
 }

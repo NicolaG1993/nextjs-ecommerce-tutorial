@@ -86,3 +86,8 @@ module.exports.getUser = (email) => {
     const key = [email];
     return db.query(myQuery, key);
 };
+module.exports.createUser = (name, email, password, isAdmin) => {
+    const myQuery = `INSERT INTO users (name, email, password, is_admin) VALUES ($1, $2, $3, $4) RETURNING *`;
+    const keys = [name, email, password, isAdmin];
+    return db.query(myQuery, keys);
+};

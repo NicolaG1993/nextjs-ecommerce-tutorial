@@ -1,11 +1,37 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useContext, useState } from "react";
+import Cookies from "js-cookie";
+import { Store } from "../utils/Store";
+import { useRouter } from "next/router";
 
 const TotalItemsBadge = dynamic(() => import("./TotalItemsBadge"), {
     ssr: false,
 });
 
-export default function Header({ darkMode, darkModeChangeHandler, cart }) {
+export default function Header({
+    darkMode,
+    darkModeChangeHandler,
+    cart,
+    userInfo,
+}) {
+    const router = useRouter();
+    const { dispatch } = useContext(Store);
+    const [anchorEl, setAnchorElement] = useState(false);
+    const dropMenuOpen = () => {
+        setAnchorElement(!anchorEl);
+    };
+    const dropMenuClose = () => {
+        setAnchorElement(false);
+    };
+    const logoutClickHandler = () => {
+        setAnchorElement(false);
+        dispatch({ type: "USER_LOGOUT" });
+        Cookies.remove("userInfo");
+        Cookies.remove("cartItems");
+        router.push("/");
+    };
+
     return (
         <header>
             <Link href="/">
@@ -28,9 +54,30 @@ export default function Header({ darkMode, darkModeChangeHandler, cart }) {
                         ) : null}
                     </a>
                 </Link>
-                <Link href="/login">
-                    <a>Login</a>
-                </Link>
+                {userInfo ? (
+                    <>
+                        <span className={"navbarBtn"} onClick={dropMenuOpen}>
+                            {userInfo.name}
+                        </span>
+                        {anchorEl && (
+                            <div className={"navbarDropMenu"}>
+                                <Link href="/login">
+                                    <a onClick={dropMenuClose}>Profile</a>
+                                </Link>
+                                <Link href="/login">
+                                    <a onClick={dropMenuClose}>My account</a>
+                                </Link>
+                                <Link href="/login">
+                                    <a onClick={logoutClickHandler}>Logout</a>
+                                </Link>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <Link href="/login">
+                        <a>Login</a>
+                    </Link>
+                )}
             </div>
         </header>
     );

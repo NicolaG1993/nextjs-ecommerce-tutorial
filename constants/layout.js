@@ -7,7 +7,9 @@ import Cookies from "js-cookie";
 
 export default function Layout({ children }) {
     const { state, dispatch } = useContext(Store);
-    const { darkMode, cart } = state;
+    const { darkMode, cart, userInfo } = state;
+
+    console.log("userInfo: ", userInfo);
 
     useEffect(
         () =>
@@ -40,6 +42,7 @@ export default function Layout({ children }) {
                 darkMode={darkMode}
                 darkModeChangeHandler={darkModeChangeHandler}
                 cart={cart}
+                userInfo={userInfo || null}
             />
             {children}
             <Footer />

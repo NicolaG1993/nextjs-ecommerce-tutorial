@@ -1,14 +1,19 @@
+import { SnackbarProvider } from "notistack";
 import Layout from "../constants/layout";
 import "../styles/globals.css";
 import { StoreProvider } from "../utils/Store";
 
 function MyApp({ Component, pageProps }) {
     return (
-        <StoreProvider>
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
-        </StoreProvider>
+        <SnackbarProvider
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+            <StoreProvider>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </StoreProvider>
+        </SnackbarProvider>
     );
 }
 
