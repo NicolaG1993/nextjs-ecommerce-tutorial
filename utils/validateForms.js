@@ -34,27 +34,35 @@ const passwordValidation = (password) => {
     }
 };
 
+const addressValidation = (fieldName, fieldValue) => {
+    if (fieldValue.trim().length < 1) {
+        return `${fieldName} is required`;
+    } else {
+        return null;
+    }
+};
+
 const requestedValue = (fieldValue) => {
     if (fieldValue.trim() === "") {
-        return `Devi inserire qualcosa`;
+        return `This value is required`;
     }
     return null;
 };
 const textValidation = (fieldValue) => {
     if (fieldValue.trim() === "") {
-        return `Devi scriverci qualcosa`;
+        return `This field is required`;
     }
     return null;
 };
 
 const numberValidation = (fieldName, fieldValue) => {
     if (fieldValue.trim() === "") {
-        return `Il ${fieldName} è richiesto`;
+        return `${fieldName} is required`;
     }
     if (/^\d+$/.test(fieldValue)) {
         return null;
     }
-    return `${fieldName} deve essere un numero`;
+    return `${fieldName} must be a number`;
 };
 
 // const ageValidation = (age) => {
@@ -84,6 +92,7 @@ module.exports = {
     requestedValue,
     textValidation,
     numberValidation,
+    addressValidation,
 };
 
 /*
