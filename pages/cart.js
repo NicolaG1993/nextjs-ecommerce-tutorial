@@ -12,7 +12,7 @@ function Cart() {
     const {
         cart: { cartItems },
     } = state;
-    console.log("cart:", cartItems);
+    console.log("cartItems:", cartItems);
 
     const updateCartHandler = async (item, quantity) => {
         const res = await axios.get(`/api/product/${item.slug}`);

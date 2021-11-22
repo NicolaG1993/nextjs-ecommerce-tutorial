@@ -98,7 +98,8 @@ export default function Checkout() {
         }
     };
 
-    const submitHandler = () => {
+    const submitHandler = (e) => {
+        e.preventDefault();
         dispatch({
             type: "SAVE_SHIPPING_ADRESS",
             payload: {
@@ -126,7 +127,7 @@ export default function Checkout() {
 
     return (
         <main>
-            <CheckoutWizard />
+            <CheckoutWizard activeStep={1} />
             <h1>Shipping Address</h1>
 
             <form onSubmit={(e) => submitHandler(e)}>

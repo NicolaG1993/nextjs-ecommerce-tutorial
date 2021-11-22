@@ -338,3 +338,39 @@ main {
     background-color: #55b776;
     z-index: -1;
 }
+
+/*PLACE ORDER*/
+.placeorder-section {
+    display: flex;
+}
+.placeorder-section > div:nth-child(1) {
+    width: 75%;
+}
+.placeorder-section > div:nth-child(2) {
+    width: 25%;
+}
+
+.grid-table-headings {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 110px 1fr 120px 120px;
+    align-items: center;
+}
+
+.placeorder-table-product > div {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 110px 1fr 120px 120px;
+    align-items: center;
+}
+
+.placeorder-table-product > div > a:nth-child(1) > div {
+    height: 50px;
+    width: 50px;
+    position: relative;
+}
+
+.flex-paragraph {
+    display: flex;
+    justify-content: space-between;
+}

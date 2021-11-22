@@ -1,4 +1,4 @@
-export default function CheckoutWizard({ activeStep = 1 }) {
+export default function CheckoutWizard({ activeStep }) {
     return (
         <div>
             <ul className={"progressbar"}>
