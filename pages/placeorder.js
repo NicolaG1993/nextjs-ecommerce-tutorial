@@ -2,18 +2,24 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Store } from "../utils/Store";
 import CheckoutWizard from "../components/CheckoutWizard";
+import { useSnackbar } from "notistack";
+import { getError } from "../utils/error";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 function PlaceOrder() {
     const router = useRouter();
     const { state, dispatch } = useContext(Store);
 
     const {
+        userInfo,
         cart: { cartItems, shippingAddress, paymentMethod },
     } = state;
     console.log("cartItems:", cartItems);
+    console.log("shippingAddress:", shippingAddress);
 
     const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
     const itemsPrice = round2(
@@ -23,11 +29,52 @@ function PlaceOrder() {
     const taxPrice = round2(itemsPrice * 0.15);
     const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
+    let orderItems = [];
+    cartItems.map((el) => {
+        orderItems.push({ itemId: el.id, quantity: el.quantity });
+    });
+
     useEffect(() => {
         if (!paymentMethod) {
             router.push("/payment");
         }
+        if (cartItems.length === 0) {
+            router.push("/cart");
+        }
     }, []);
+
+    const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+    const [loading, setLoading] = useState(false);
+
+    const placeOrderHandler = async () => {
+        closeSnackbar();
+
+        try {
+            setLoading(true);
+            const { data } = await axios.post(
+                "/api/orders",
+                {
+                    userId: userInfo.id,
+                    orderItems,
+                    shippingAddress,
+                    paymentMethod,
+                    itemsPrice,
+                    shippingPrice,
+                    taxPrice,
+                    totalPrice,
+                },
+                { headers: { authorization: `Bearer ${userInfo.token}` } }
+            );
+            dispatch({ type: "CART_CLEAR" });
+            Cookies.remove("cartItems");
+            setLoading(false);
+            router.push(`/order/${data.orderid}`);
+            //dovrei settare id random invece di numeri seriali
+        } catch (err) {
+            setLoading(false);
+            enqueueSnackbar(getError(err), { variant: "error" });
+        }
+    };
 
     return (
         <main>
@@ -109,15 +156,14 @@ function PlaceOrder() {
                         <h4>Total Price:</h4> <h4>{totalPrice} €</h4>
                     </div>
 
-                    <button onClick={() => router.push("/checkout")}>
-                        Place order
-                    </button>
+                    <button onClick={placeOrderHandler}>Place order</button>
                     <button
                         type="button"
                         onClick={() => router.push("/payment")}
                     >
                         Go back
                     </button>
+                    {loading && <h4>Loading...</h4>}
                 </div>
             </section>
         </main>
@@ -125,3 +171,8 @@ function PlaceOrder() {
 }
 
 export default dynamic(() => Promise.resolve(PlaceOrder), { ssr: false });
+
+//testare nuova table (setup, data types)
+//testare db functions
+//testare middleware
+//testare api endpoint

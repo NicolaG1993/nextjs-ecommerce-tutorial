@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS orders;
 
 CREATE TABLE products(
     id SERIAL PRIMARY KEY,
@@ -51,12 +52,57 @@ CREATE TABLE users(
 INSERT INTO users (name, email, password)
 VALUES ('John Wayne', 'user1@example.com', 'xxx');
 INSERT INTO users (name, email, password)
-VALUES ('Chelsea Campostrini', 'user@example.com', 'xxx');
+VALUES ('Giuseppe Verdi', 'user@example.com', 'xxx');
 INSERT INTO users (name, email, password, is_admin)
 VALUES ('Nicola Gaioni', 'admin@example.com', 'xxx', true);
 
+CREATE TABLE orders(
+    orderId SERIAL PRIMARY KEY,
+    userId INT NOT NULL,
+    orderItems TEXT[],
+    shippingAddress JSON NOT NULL,
+    paymentMethod VARCHAR NOT NULL,
+    itemsPrice DECIMAL(12,2) NOT NULL,
+    shippingPrice DECIMAL(12,2) NOT NULL,
+    taxPrice DECIMAL(12,2) NOT NULL,
+    totalPrice DECIMAL(12,2) NOT NULL,
+    isPaid BOOLEAN DEFAULT false,
+    isDelivered BOOLEAN DEFAULT false,
+    paidAt TIMESTAMP,
+    deliveredAt TIMESTAMP,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
+INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt)
+VALUES (
+    1,
+    array['{itemId: 1, quantity: 1}', '{itemId: 2, quantity: 1}'], 
+    '{"fullName": "Nicola Gaioni", "address": "Via Porto 1", "city": "Cassone", "postalCode": "37010", "country": "Italy"}',
+    'PayPal',
+    15,
+    0,
+    0.5,
+    15.5,
+    true,
+    false,
+    '2020-06-22 19:10:25-07',
+    null
+);
+-- '[{"itemId": 1, "quantity": 1}, {"itemId": "2", "quantity": "2"}]', 
+-- '[{'name': 'Pants', 'quantity': 1, 'image': '', 'price': 10}, {'name': '', 'quantity': '', 'image': '', 'price': 5}]', 
+
+--forse mi conviene salvare solo user id, e prenderlo successivamente quando mi serve 
+-- {id: 3, name: 'Nicola Gaioni', email: 'admin@example.com'}, 
+--forse mi conviene fare lo stesso con orderItems, salvare solo id e quantitá
+-- poi prenderli da altra table e creare array nel momento che richiedo l'ordine (magari adirittura in client, e non via JOIN TABLE)
+-- visto che non saprei come accedere ai valori
+
+
+
 
 --devo settare bene i required, unique, default values e !=''
+--devo inoltre testare tutti i "NOT NULL" e "CHECK", non sono sicuro che funzionino tutti, o quali siano richiesti
 
 
 -- sudo service postgresql start

@@ -1,6 +1,6 @@
 import { getUser } from "../../../utils/db";
 import { bcrypt } from "bcryptjs";
-import signToken from "../../../utils/auth";
+import { signToken } from "../../../utils/auth";
 
 export default async function handler(req, res) {
     const email = req.body.email;

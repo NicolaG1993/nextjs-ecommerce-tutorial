@@ -78,7 +78,7 @@ module.exports.addItem = (
         description,
     ];
     return db.query(myQuery, keys);
-};
+}; // to check
 
 // USERS
 module.exports.getUser = (email) => {
@@ -91,3 +91,46 @@ module.exports.createUser = (name, email, password, isAdmin) => {
     const keys = [name, email, password, isAdmin];
     return db.query(myQuery, keys);
 };
+
+//ORDERS
+module.exports.newOrder = ({
+    userId,
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    shippingPrice,
+    taxPrice,
+    totalPrice,
+    isPaid,
+    isDelivered,
+    paidAt,
+    deliveredAt,
+}) => {
+    const myQuery = `INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
+    const keys = [
+        userId,
+        orderItems,
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        shippingPrice,
+        taxPrice,
+        totalPrice,
+        isPaid,
+        isDelivered,
+        paidAt,
+        deliveredAt,
+    ];
+    return db.query(myQuery, keys);
+};
+
+module.exports.getOrder = (orderId) => {
+    const myQuery = `SELECT * FROM orders
+    JOIN users 
+    ON (orderId = $1 AND userId = users.id)
+    ORDER BY createdAt ASC`;
+    const key = [orderId];
+    return db.query(myQuery, key);
+}; // to check
+// da user mi serve solo nome e email
