@@ -5,7 +5,7 @@ async function handler(req, res) {
 
     try {
         const data = await newOrder({ ...req.body, userId: req.user.id });
-        console.log("data🥶:", data.rows[0]);
+        // console.log("data🥶:", data.rows[0]);
         res.status(201).json(data.rows[0]);
     } catch (err) {
         if (err.name === "UnauthorizedError") {

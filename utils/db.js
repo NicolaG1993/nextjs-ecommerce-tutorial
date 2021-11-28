@@ -126,7 +126,8 @@ module.exports.newOrder = ({
 };
 
 module.exports.getOrder = (orderId) => {
-    const myQuery = `SELECT * FROM orders
+    const myQuery = `SELECT orders.*, users.name, users.email, users.is_admin, users.profile_pic_url
+    FROM orders
     JOIN users 
     ON (orderId = $1 AND userId = users.id)
     ORDER BY createdAt ASC`;

@@ -18,8 +18,8 @@ function PlaceOrder() {
         userInfo,
         cart: { cartItems, shippingAddress, paymentMethod },
     } = state;
-    console.log("cartItems:", cartItems);
-    console.log("shippingAddress:", shippingAddress);
+    // console.log("cartItems:", cartItems);
+    // console.log("shippingAddress:", shippingAddress);
 
     const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
     const itemsPrice = round2(
@@ -31,7 +31,14 @@ function PlaceOrder() {
 
     let orderItems = [];
     cartItems.map((el) => {
-        orderItems.push({ itemId: el.id, quantity: el.quantity });
+        orderItems.push({
+            itemId: el.id,
+            name: el.name,
+            price: el.price,
+            quantity: el.quantity,
+            image: el.image,
+            slug: el.slug,
+        });
     });
 
     useEffect(() => {
@@ -55,7 +62,7 @@ function PlaceOrder() {
                 "/api/orders",
                 {
                     userId: userInfo.id,
-                    orderItems,
+                    orderItems: JSON.stringify(orderItems),
                     shippingAddress,
                     paymentMethod,
                     itemsPrice,

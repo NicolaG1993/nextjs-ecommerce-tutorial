@@ -59,7 +59,7 @@ VALUES ('Nicola Gaioni', 'admin@example.com', 'xxx', true);
 CREATE TABLE orders(
     orderId SERIAL PRIMARY KEY,
     userId INT NOT NULL,
-    orderItems TEXT[],
+    orderItems JSONB NOT NULL,
     shippingAddress JSON NOT NULL,
     paymentMethod VARCHAR NOT NULL,
     itemsPrice DECIMAL(12,2) NOT NULL,
@@ -73,11 +73,27 @@ CREATE TABLE orders(
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
+-- orderItems TEXT[],
 
 INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt)
 VALUES (
     1,
-    array['{itemId: 1, quantity: 1}', '{itemId: 2, quantity: 1}'], 
+    '[{
+        "itemId": 1,
+        "name": "Free Shirt",
+        "slug": "free-shirt",
+        "price": 70,
+        "quantity": 1,
+        "image": "/images/shirt1.jpg"
+    },
+    {
+        "itemId": 2,
+        "name": "Fit Shirt",
+        "slug": "fit-shirt",
+        "price": 40,
+        "quantity": 1,
+        "image": "/images/shirt2.jpg"
+    }]',
     '{"fullName": "Nicola Gaioni", "address": "Via Porto 1", "city": "Cassone", "postalCode": "37010", "country": "Italy"}',
     'PayPal',
     15,
@@ -91,6 +107,7 @@ VALUES (
 );
 -- '[{"itemId": 1, "quantity": 1}, {"itemId": "2", "quantity": "2"}]', 
 -- '[{'name': 'Pants', 'quantity': 1, 'image': '', 'price': 10}, {'name': '', 'quantity': '', 'image': '', 'price': 5}]', 
+-- array['{itemId: 1, quantity: 1}', '{itemId: 2, quantity: 1}'], 
 
 --forse mi conviene salvare solo user id, e prenderlo successivamente quando mi serve 
 -- {id: 3, name: 'Nicola Gaioni', email: 'admin@example.com'}, 
