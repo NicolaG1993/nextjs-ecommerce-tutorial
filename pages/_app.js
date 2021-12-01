@@ -1,3 +1,4 @@
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { SnackbarProvider } from "notistack";
 import Layout from "../constants/layout";
 import "../styles/globals.css";
@@ -9,9 +10,11 @@ function MyApp({ Component, pageProps }) {
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
             <StoreProvider>
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
+                <PayPalScriptProvider deferLoading={true}>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                </PayPalScriptProvider>
             </StoreProvider>
         </SnackbarProvider>
     );

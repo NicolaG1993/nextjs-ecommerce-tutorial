@@ -65,6 +65,7 @@ function PlaceOrder() {
                     orderItems: JSON.stringify(orderItems),
                     shippingAddress,
                     paymentMethod,
+                    paymentResult: null,
                     itemsPrice,
                     shippingPrice,
                     taxPrice,

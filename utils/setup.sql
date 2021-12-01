@@ -62,6 +62,7 @@ CREATE TABLE orders(
     orderItems JSONB NOT NULL,
     shippingAddress JSON NOT NULL,
     paymentMethod VARCHAR NOT NULL,
+    paymentResult JSON,
     itemsPrice DECIMAL(12,2) NOT NULL,
     shippingPrice DECIMAL(12,2) NOT NULL,
     taxPrice DECIMAL(12,2) NOT NULL,
@@ -75,9 +76,9 @@ CREATE TABLE orders(
 );
 -- orderItems TEXT[],
 
-INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt)
+INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, paymentResult, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt)
 VALUES (
-    1,
+    3,
     '[{
         "itemId": 1,
         "name": "Free Shirt",
@@ -96,6 +97,7 @@ VALUES (
     }]',
     '{"fullName": "Nicola Gaioni", "address": "Via Porto 1", "city": "Cassone", "postalCode": "37010", "country": "Italy"}',
     'PayPal',
+    '{"id": "" , "status": "", "email_address": "" }',
     15,
     0,
     0.5,

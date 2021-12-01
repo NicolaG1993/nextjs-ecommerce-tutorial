@@ -9,6 +9,8 @@ import { getError } from "../../utils/error";
 import axios from "axios";
 import CheckoutWizard from "../../components/CheckoutWizard";
 import Cookies from "js-cookie";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { formatJSDate } from "../../utils/convertTimestamp";
 
 function reducer(state, action) {
     switch (action.type) {
@@ -27,6 +29,30 @@ function reducer(state, action) {
                 loading: false,
                 error: action.payload,
             };
+        case "PAY_REQUEST":
+            return {
+                ...state,
+                loadingPay: true,
+            };
+        case "PAY_SUCCESS":
+            return {
+                ...state,
+                loadingPay: false,
+                successPay: true,
+            };
+        case "PAY_FAIL":
+            return {
+                ...state,
+                loadingPay: false,
+                errorPay: action.payload,
+            };
+        case "PAY_RESET":
+            return {
+                ...state,
+                loadingPay: false,
+                successPay: false,
+                errorPay: false,
+            };
         default:
             state;
     }
@@ -34,15 +60,20 @@ function reducer(state, action) {
 
 function Order({ params }) {
     const orderId = Number(params.id);
+    const [{ ispending }, paypalDispatch] = usePayPalScriptReducer();
     const router = useRouter();
     const { state } = useContext(Store);
     const { userInfo } = state;
+    const { closeSnackbar, enqueueSnackbar } = useSnackbar();
 
-    const [{ loading, error, order }, dispatch] = useReducer(reducer, {
-        loading: true,
-        order: {},
-        error: "",
-    });
+    const [{ loading, error, order, successPay }, dispatch] = useReducer(
+        reducer,
+        {
+            loading: true,
+            order: {},
+            error: "",
+        }
+    );
 
     const {
         shippingaddress,
@@ -52,10 +83,10 @@ function Order({ params }) {
         taxprice,
         shippingprice,
         totalprice,
-        isDelivered,
-        deliveredAt,
-        isPaid,
-        paidAt,
+        isdelivered,
+        deliveredat,
+        ispaid,
+        paidat,
     } = order;
 
     useEffect(() => {
@@ -76,22 +107,70 @@ function Order({ params }) {
             }
         };
 
-        if (!order.orderid || (order.orderid && order.orderid !== orderId)) {
-            console.log("🥶order.orderid:", order.orderid);
-            console.log("🥶orderId:", orderId);
+        if (
+            !order.orderid ||
+            successPay ||
+            (order.orderid && order.orderid !== orderId)
+        ) {
             fetchOrder();
-        }
-    }, [order]);
+            if (successPay) {
+                dispatch({ type: "PAY_RESET" });
+            }
+        } else {
+            const loadPayPalScript = async () => {
+                const { data: clientId } = await axios.get(`/api/keys/paypal`, {
+                    headers: { authorization: `Bearer ${userInfo.token}` },
+                });
 
-    // const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+                paypalDispatch({
+                    type: "resetOptions",
+                    value: { "client-id": clientId, currency: "EUR" },
+                });
+                paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+            };
+            loadPayPalScript();
+        }
+    }, [order, successPay]);
 
     console.log("order:", order);
     // console.log("shippingaddress:", shippingaddress);
 
+    const createOrder = (data, actions) => {
+        console.log("🥶 totalprice:", totalprice);
+        return actions.order
+            .create({
+                purchase_units: [{ amount: { value: totalprice } }],
+            })
+            .then((orderID) => {
+                console.log("🥶 orderID:", orderID);
+                return orderID;
+            });
+    };
+    const onApprove = (data, actions) => {
+        return actions.order.capture().then(async function (details) {
+            try {
+                dispatch({ type: "PAY_REQUEST" });
+                const { data } = await axios.put(
+                    `/api/orders/${order.orderid}/pay`,
+                    details,
+                    { headers: { authorization: `Bearer ${userInfo.token}` } }
+                );
+                dispatch({ type: "PAY_SUCCESS", payload: data });
+                enqueueSnackbar("Order is paid", { variant: "success" });
+                console.log("🥶 PAY_SUCCESS", data);
+            } catch (err) {
+                dispatch({ type: "PAY_FAIL", payload: getError(err) });
+                enqueueSnackbar(getError(err), { variant: "error" });
+                console.log("🥶 PAY_FAIL:", getError(err));
+            }
+        });
+    };
+    const onCancel = (err) => {
+        enqueueSnackbar(getError(err), { variant: "error" });
+    };
+
     return (
         <main>
-            <CheckoutWizard activeStep={3} />
-
             <h1>Order details: {orderId}</h1>
 
             {loading ? (
@@ -112,8 +191,10 @@ function Order({ params }) {
                             </p>
                             <p>
                                 Status:{" "}
-                                {isDelivered
-                                    ? `delivered at ${deliveredAt}`
+                                {isdelivered
+                                    ? `delivered at ${formatJSDate(
+                                          deliveredat
+                                      )}`
                                     : `not delivered`}
                             </p>
                         </div>
@@ -123,7 +204,9 @@ function Order({ params }) {
                             <p>{paymentmethod}</p>
                             <p>
                                 Status:{" "}
-                                {isPaid ? `paid at ${paidAt}` : `not paid`}
+                                {ispaid
+                                    ? `paid at ${formatJSDate(paidat)}`
+                                    : `not paid`}
                             </p>
                         </div>
 
@@ -183,6 +266,20 @@ function Order({ params }) {
                         <div className={"flex-paragraph"}>
                             <h4>Total Price:</h4> <h4>{totalprice} €</h4>
                         </div>
+
+                        {!ispaid && (
+                            <div>
+                                {ispending ? (
+                                    <p>Loading paypal...</p>
+                                ) : (
+                                    <PayPalButtons
+                                        createOrder={createOrder}
+                                        onApprove={onApprove}
+                                        onCancel={onCancel}
+                                    ></PayPalButtons>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </section>
             )}

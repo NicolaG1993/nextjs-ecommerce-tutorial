@@ -98,6 +98,7 @@ module.exports.newOrder = ({
     orderItems,
     shippingAddress,
     paymentMethod,
+    paymentResult,
     itemsPrice,
     shippingPrice,
     taxPrice,
@@ -107,12 +108,13 @@ module.exports.newOrder = ({
     paidAt,
     deliveredAt,
 }) => {
-    const myQuery = `INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
+    const myQuery = `INSERT INTO orders (userId, orderItems, shippingAddress, paymentMethod, paymentResult, itemsPrice, shippingPrice, taxPrice, totalPrice, isPaid, isDelivered, paidAt, deliveredAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`;
     const keys = [
         userId,
         orderItems,
         shippingAddress,
         paymentMethod,
+        paymentResult,
         itemsPrice,
         shippingPrice,
         taxPrice,
@@ -135,3 +137,9 @@ module.exports.getOrder = (orderId) => {
     return db.query(myQuery, key);
 }; // to check
 // da user mi serve solo nome e email
+
+module.exports.updateOrder = (id, bool, paymentResult) => {
+    const myQuery = `UPDATE orders SET isPaid = $2, paidAt = CURRENT_TIMESTAMP, paymentResult = $3 WHERE orderId = $1 RETURNING *`;
+    const keys = [id, bool, paymentResult];
+    return db.query(myQuery, keys);
+};
