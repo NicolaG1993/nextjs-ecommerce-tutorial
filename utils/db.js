@@ -138,6 +138,15 @@ module.exports.getOrder = (orderId) => {
 }; // to check
 // da user mi serve solo nome e email
 
+module.exports.getOrderHistory = (userId) => {
+    const myQuery = `SELECT *
+    FROM orders
+    WHERE userId = $1
+    ORDER BY createdAt ASC`;
+    const key = [userId];
+    return db.query(myQuery, key);
+};
+
 module.exports.updateOrder = (id, bool, paymentResult) => {
     const myQuery = `UPDATE orders SET isPaid = $2, paidAt = CURRENT_TIMESTAMP, paymentResult = $3 WHERE orderId = $1 RETURNING *`;
     const keys = [id, bool, paymentResult];

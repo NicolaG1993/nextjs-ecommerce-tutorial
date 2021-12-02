@@ -374,3 +374,9 @@ main {
     display: flex;
     justify-content: space-between;
 }
+
+/* ORDER HISTORY */
+.order-history-section > div {
+    display: grid;
+    grid-template-columns: 10% 20% 10% 25% 25% 10%;
+}

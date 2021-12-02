@@ -61,11 +61,11 @@ export default function Header({
                         </span>
                         {anchorEl && (
                             <div className={"navbarDropMenu"}>
-                                <Link href="/login">
+                                <Link href="/profile">
                                     <a onClick={dropMenuClose}>Profile</a>
                                 </Link>
-                                <Link href="/login">
-                                    <a onClick={dropMenuClose}>My account</a>
+                                <Link href="/order-history">
+                                    <a onClick={dropMenuClose}>Order History</a>
                                 </Link>
                                 <Link href="/login">
                                     <a onClick={logoutClickHandler}>Logout</a>
