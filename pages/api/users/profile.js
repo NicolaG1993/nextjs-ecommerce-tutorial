@@ -1,5 +1,5 @@
 import { updateUser } from "../../../utils/db";
-import { bcrypt } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { signToken, isAuth } from "../../../utils/auth";
 
 async function handler(req, res) {
@@ -19,7 +19,6 @@ async function handler(req, res) {
         password = bcrypt.hashSync(password);
     }
 
-    // let user = await createUser(name, email, bcrypt.hashSync(password), false);
     let user = await updateUser(id, name, email, password);
 
     user = user.rows[0];

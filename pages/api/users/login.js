@@ -1,5 +1,5 @@
 import { getUser } from "../../../utils/db";
-import { bcrypt } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { signToken } from "../../../utils/auth";
 
 export default async function handler(req, res) {
@@ -9,8 +9,8 @@ export default async function handler(req, res) {
     user = user.rows[0];
 
     if (user) {
-        if (req.body.password === user.password) {
-            // if (user && bcrypt.compareSync(req.body.password, user.password)) {
+        // if (req.body.password === user.password) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
             const token = signToken(user);
             res.send({
                 id: user.id,

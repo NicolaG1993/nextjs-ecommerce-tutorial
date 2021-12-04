@@ -6,3 +6,9 @@ https://developer.paypal.com/developer/applications/
 -> puo essere che ho creato app in sandbox e non in Live mode, devo provare a fare il login e vedere se ho auth per creare app live
 
 puó essere che debba usare PayPalScriptProvider in app.js, invece di inserire script manualmente
+
+
+
+-------------
+
+attivare bcrypt per passwords 😋

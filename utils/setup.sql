@@ -49,12 +49,14 @@ CREATE TABLE users(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (name, email, password)
-VALUES ('John Wayne', 'user1@example.com', 'xxx');
-INSERT INTO users (name, email, password)
-VALUES ('Giuseppe Verdi', 'user@example.com', 'xxx');
-INSERT INTO users (name, email, password, is_admin)
-VALUES ('Nicola Gaioni', 'admin@example.com', 'xxx', true);
+-- INSERT INTO users (name, email, password)
+-- VALUES ('John Wayne', 'user1@example.com', 'xxx');
+-- INSERT INTO users (name, email, password)
+-- VALUES ('Giuseppe Verdi', 'user@example.com', 'xxx');
+-- INSERT INTO users (name, email, password, is_admin)
+-- VALUES ('Nicola Gaioni', 'admin@example.com', 'xxx', true);
+-- non so come fare bcrypt.hashSync(password) in questo file 🧠
+
 
 CREATE TABLE orders(
     orderId SERIAL PRIMARY KEY,
