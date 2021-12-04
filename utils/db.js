@@ -91,6 +91,14 @@ module.exports.createUser = (name, email, password, isAdmin) => {
     const keys = [name, email, password, isAdmin];
     return db.query(myQuery, keys);
 };
+module.exports.updateUser = (id, name, email, password) => {
+    const myQuery = `UPDATE users 
+    SET name = COALESCE($2, name), email = COALESCE($3, email), password = COALESCE($4, password)
+    WHERE id = $1
+    RETURNING *`;
+    const keys = [id, name, email, password];
+    return db.query(myQuery, keys);
+};
 
 //ORDERS
 module.exports.newOrder = ({
